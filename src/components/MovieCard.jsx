@@ -38,7 +38,7 @@ const MovieCard = ({ movie }) => {
         >
             <CardBody px={0} py={0} h={"250px"}>
                 <Image
-                    src={`${import.meta.env.VITE_SERVER_IMAGE_URL}${movie.poster_path}`}
+                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                     alt="Green double couch with wooden legs"
                     width={"100%"}
                     height={"100%"}
