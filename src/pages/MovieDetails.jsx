@@ -61,9 +61,9 @@ const MovieDetails = () => {
                         direction={"column"}
                         gap={15}
                     >
-                        <Button onClick={goBack} colorScheme="whatsapp">
+                        {/* <Button onClick={goBack} colorScheme="whatsapp">
                             go back
-                        </Button>
+                        </Button> */}
                         <SkeletonMovieCard />
                     </Flex>
                 </Container>
@@ -154,6 +154,7 @@ const MovieDetails = () => {
                                             key={genre.id}
                                             fontSize={"sm"}
                                             mr={6}
+                                            mb="2"
                                             colorScheme="whatsapp"
                                         >
                                             {genre.name}
