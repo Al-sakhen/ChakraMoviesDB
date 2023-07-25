@@ -1,59 +1,56 @@
-import axios from "axios";
 import { useEffect } from "react";
-import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import SkeletonMovieCard from "../components/SkeletonMovieCard";
-
+import { BiArrowBack } from "react-icons/bi";
+import { AiOutlinePlayCircle } from "react-icons/ai";
 import {
     Box,
     Button,
     Flex,
-    chakra,
     Container,
     Stack,
     Text,
     Image,
     VStack,
     Heading,
-    SimpleGrid,
     StackDivider,
     useColorModeValue,
-    VisuallyHidden,
-    List,
-    ListItem,
     Grid,
     GridItem,
     Badge,
+    HStack,
+    Spinner,
 } from "@chakra-ui/react";
-import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
-import { MdLocalShipping } from "react-icons/md";
+import { useGetMovieDetailsQuery } from "../app/services/moviesDb";
+import { convertToHoursAndMinutes } from "./../app/helpers/func";
+
 const MovieDetails = () => {
     const { id } = useParams();
 
     const navigate = useNavigate();
     const goBack = () => navigate(-1);
+    const dividerBorderColor = useColorModeValue("gray.600", "gray.400");
 
+    const { data, isLoading, isFetching } = useGetMovieDetailsQuery({ id });
     useEffect(() => {
-        document.title = "Movie Details | " + id;
-    }, [id]);
+        if (data) {
+            document.title = data.title;
+        } else {
+            document.title = "Loading...";
+        }
+    }, [id, data]);
 
-    const getMoviesList = async () => {
-        const { data } = await axios.get(
-            `https://api.themoviedb.org/3/movie/${id}`,
-            {
-                headers: {
-                    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzNmExNTcxY2Q5YTExOTljYWRmMmRhNjBlNjY3YTQ4YyIsInN1YiI6IjYxZDMwMGViOTQ0YTU3MDA0NWIzZTI3MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KyCvfWlyqvgHrXew7iJjGK498cqEUYNt1l7J8Trbe9M`,
-                },
-            }
-        );
-        return data;
-    };
-
-    const { data, isLoading } = useQuery(["movies", id], () => getMoviesList());
-    console.log(data);
     if (isLoading)
         return (
             <>
+                {isFetching ? (
+                    <Spinner
+                        position={"fixed"}
+                        top={"65px"}
+                        right={"30px"}
+                        size="md"
+                    />
+                ) : null}
                 <Container maxW="container.sm" py={10}>
                     <Flex
                         justifyContent={"center"}
@@ -72,20 +69,27 @@ const MovieDetails = () => {
 
     return (
         <Container maxW={"7xl"}>
-            <Button onClick={goBack} colorScheme="whatsapp">
-                go back
-            </Button>
-            <Grid templateColumns="repeat(6, 1fr)" py={10} gap={9}>
+            <Flex
+                justifyContent={{ base: "center", md: "start" }}
+                pt={5}
+            >
+                <Button
+                    onClick={goBack}
+                    colorScheme="whatsapp"
+                    size={"sm"}
+                >
+                    <BiArrowBack />
+                </Button>
+            </Flex>
+            <Grid templateColumns="repeat(6, 1fr)" py={5} gap={9}>
                 <GridItem
                     colSpan={{ base: 6, md: 2 }}
-                    bg={"red.400"}
-                    rounded={"lg"}
+                    rounded={"xl"}
                     overflow={"hidden"}
                     height={{ base: "300px", sm: "400px", lg: "500px" }}
                     objectFit={"cover"}
                 >
                     <Image
-                        rounded={"md"}
                         alt={"product image"}
                         src={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
                         fit={"cover"}
@@ -101,19 +105,34 @@ const MovieDetails = () => {
                                 lineHeight={1.1}
                                 fontWeight={600}
                                 fontSize={{ base: "2xl", sm: "4xl", lg: "5xl" }}
+                                mb={2}
                             >
                                 {data.title}
                             </Heading>
-                            <Text
-                                color={useColorModeValue(
-                                    "gray.900",
-                                    "gray.400"
-                                )}
-                                fontWeight={300}
-                                fontSize={"2xl"}
-                            >
-                                {data.release_date}
-                            </Text>
+                            <HStack wrap={"wrap"} gap={5}>
+                                <Text
+                                    color={useColorModeValue(
+                                        "gray.900",
+                                        "gray.400"
+                                    )}
+                                    fontWeight={300}
+                                    fontSize={"2xl"}
+                                >
+                                    {data.release_date}
+                                </Text>
+                                <Text
+                                    as={Flex}
+                                    alignItems={"center"}
+                                    gap={"1"}
+                                    color={useColorModeValue(
+                                        "gray.900",
+                                        "gray.400"
+                                    )}
+                                >
+                                    <AiOutlinePlayCircle />
+                                    {convertToHoursAndMinutes(data.runtime)}
+                                </Text>
+                            </HStack>
                         </Box>
 
                         <Stack
@@ -121,10 +140,7 @@ const MovieDetails = () => {
                             direction={"column"}
                             divider={
                                 <StackDivider
-                                    borderColor={useColorModeValue(
-                                        "gray.200",
-                                        "gray.600"
-                                    )}
+                                    borderColor={dividerBorderColor}
                                 />
                             }
                         >
@@ -145,9 +161,7 @@ const MovieDetails = () => {
                                     Categories
                                 </Text>
 
-                                <Flex
-                                    wrap={"wrap"}
-                                >
+                                <Flex wrap={"wrap"}>
                                     {data.genres.map((genre) => (
                                         <Badge
                                             ariant="subtle"

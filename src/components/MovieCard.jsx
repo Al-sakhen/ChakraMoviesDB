@@ -20,6 +20,17 @@ const MovieCard = ({ movie }) => {
     const { colorMode } = useColorMode();
     return (
         <Card
+            as={MotionBox}
+            variants={{
+                visible: {
+                    opacity: 1,
+                    translateY: 0,
+                    transition: {
+                        delayChildren: 0.6,
+                    },
+                },
+                hidden: { translateY: "100%", opacity: 0 },
+            }}
             position={"relative"}
             bg={"none"}
             // border={"1px solid #a8b5c8"}
@@ -76,13 +87,15 @@ const MovieCard = ({ movie }) => {
             </CardFooter>
             <MotionBox
                 variants={{
-                    visible: { translateY: 0 },
-                    hidden: { translateY: "100%"},
+                    visible: {
+                        opacity: 1,
+                        translateY: 0,
+                        
+                    },
+                    hidden: { translateY: "100%", opacity: 0 },
                 }}
-                opacity={isHovered ? 1 : 0}
-                initial={isHovered ? "hidden" : "visible"}
+                initial={"hidden"}
                 animate={isHovered ? "visible" : "hidden"}
-                transition="ease-in-out 0.3s"
                 bg={"blackAlpha.700"}
                 position={"absolute"}
                 w={"100%"}
@@ -101,7 +114,12 @@ const MovieCard = ({ movie }) => {
                             ? movie.overview.slice(0, 200) + "..."
                             : movie.overview}
                     </Text>
-                    <Button colorScheme="green" as={Link} to={`/movies/${movie.id}`}>
+                    <Button
+                        colorScheme="green"
+                        as={Link}
+                        to={`/movies/${movie.id}`}
+                        size={"sm"}
+                    >
                         <Text>Details</Text>
                     </Button>
                 </Flex>
